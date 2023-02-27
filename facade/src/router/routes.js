@@ -29,6 +29,13 @@ const routes = [
     ]
   },
   {
+    path: '/profile',
+    component: () => import('layouts/master/Layout.vue'),
+    children: [
+      { path: '', component: () => import('pages/profile/Index.vue') }
+    ]
+  },
+  {
     path: '/member',
     component: () => import('layouts/master/Layout.vue'),
     children: [
@@ -47,6 +54,20 @@ const routes = [
     component: () => import('layouts/master/Layout.vue'),
     children: [
       { path: '', component: () => import('pages/voter/Index.vue') }
+    ]
+  },
+  {
+    path: '/raffle-winners',
+    component: () => import('layouts/master/Layout.vue'),
+    children: [
+      { path: '', component: () => import('pages/raffle/Index.vue') }
+    ]
+  },
+  {
+    path: '/raffle',
+    component: () => import('layouts/master/Layout.vue'),
+    children: [
+      { path: '', component: () => import('pages/raffle/Raffle.vue') }
     ]
   },
   {

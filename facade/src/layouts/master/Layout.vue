@@ -211,19 +211,31 @@ export default {
                     "icon": 'group',
                     "level": 0,
                     "permissions": 1,
-                    "endpoint": 0,
-                    "children": [{
-                        "id": 7,
-                        "label": "test",
-                        "parent_id": 6,
-                        "order":7,
-                        "navigation_path": '/voters',
-                        "masked_navigation_path": '/voters',
-                        "icon": 'group',
-                        "level": 1,
-                        "permissions": 1,
-                        "endpoint": 1
-                    }]
+                    "endpoint": 1
+                },
+                {
+                    "id": 7,
+                    "label": "RAFFLE",
+                    "parent_id": 0,
+                    "order": 7,
+                    "navigation_path": '/raffle-winners',
+                    "masked_navigation_path": '/raffle-winners',
+                    "icon": 'casino',
+                    "level": 0,
+                    "permissions": 1,
+                    "endpoint": 1
+                },
+                {
+                    "id": 8,
+                    "label": "PLAY",
+                    "parent_id": 7,
+                    "order": 8,
+                    "navigation_path": '/raffle',
+                    "masked_navigation_path": '/raffle',
+                    "icon": 'casino',
+                    "level": 1,
+                    "permissions": 1,
+                    "endpoint": 1
                 }
             ]
 

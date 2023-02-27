@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('election_details', function (Blueprint $table) {
+        Schema::create('raffles', function (Blueprint $table) {
             $table->id();
+            $table->string('price');
+            $table->integer('winner_user_id');
             $table->integer('election_id');
-            $table->integer('position_id');
-            $table->integer('candidate_user_id');
-            $table->integer('created_by');
-            $table->integer('is_verified')->default('0');
-            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('election_details');
+        Schema::dropIfExists('raffles');
     }
 };

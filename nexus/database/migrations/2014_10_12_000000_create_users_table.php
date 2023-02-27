@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('admin');
             $table->string('employee_id');
             $table->string('code');
+            $table->string('profile_picture')->nullable();
             $table->rememberToken();
             $table->integer('created_by');
             $table->integer('updated_by')->nullable();

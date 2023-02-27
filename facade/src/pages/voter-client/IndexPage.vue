@@ -17,7 +17,8 @@
                     <div class="row items-start q-gutter-md">
                         <div v-for="(candidate, index) in position['candidates']">
                             <q-card v-if="position['count'] > 1" class="my-card">
-                                <img src="https://cdn.quasar.dev/img/mountains.jpg">
+                                {{ index }}
+                                <img :src="candidatePicture(index)" style="width: 300px; height: 250px;">
                                 <q-card-section>
                                     <span>
                                         <q-checkbox :disable="position['count'] <= (form.vote[key]).length && !(form.vote[key]).includes(index)" v-model="form.vote[key]" :val="index" :label="candidate" color="teal" />
@@ -26,7 +27,8 @@
                             </q-card>
 
                             <q-card v-else class="my-card">
-                                <img src="https://cdn.quasar.dev/img/mountains.jpg">
+                                {{ candidatePicture(index) }}
+                                <img :src="this.images[index]" style="max-width: 300px; height: 250px;">
                                 <q-card-section>
                                     <span>
                                         <q-radio v-model="form.vote[key]" checked-icon="task_alt" color="teal" size="lg" unchecked-icon="panorama_fish_eye" :val="index">
@@ -41,10 +43,7 @@
                     </div>
                 </div>
                 <q-btn @click="inception = true" color="primary" label="Vote" class="q-mt-sm" />
-                <pre>{{ form.vote }}</pre>
-                <pre>{{ list }}</pre>
-
-                
+                <pre>{{ form }}</pre>
             </div>
         </q-form>
         <q-dialog v-model="inception">
@@ -96,6 +95,7 @@ export default defineComponent({
                 vote: {},
                 clearVote: {}   // temporary storage for formated clear votes
             },
+            images: [],
             loading: false,
             list: {},
             inception: false,
@@ -124,7 +124,7 @@ export default defineComponent({
                             this.list = response.data;
 
                             for(var x in this.list[1]) {
-      
+
                                 if(this.list[1][x]['count'] > 1) {
                                     (this.form.vote)[x]= [];
                                     console.log('vote', this.form.vote);
@@ -178,7 +178,17 @@ export default defineComponent({
                     this.errors = this.$http.requestError(error);
                 });
         },
-    }
+
+        candidatePicture(user_id) {
+            this.$http.getTokenless('api/profile/candidate-picture/' + user_id)
+                .then(response => {
+                    this.images[user_id] = response.data;
+                })
+                .catch(() => {
+                    return 'https://cdn.quasar.dev/img/mountains.jpg';
+                });
+        }
+    },
 })
 </script>
 <style lang="scss" scoped>

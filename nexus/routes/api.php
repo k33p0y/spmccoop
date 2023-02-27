@@ -8,6 +8,8 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ElectionDetailController;
+use App\Http\Controllers\RaffleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +32,16 @@ Route::middleware('auth:api')->get('user', function (Request $request) {
         'id' => $request->user()->id,
         'username' => $request->user()->username,
     ];
+});
+
+Route::group(['prefix' => 'profile'], function() {
+    Route::get('/', [AuthController::class, 'profileBase64'])->middleware(['auth:api']);
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->middleware(['auth:api']);
+    Route::post('/update-picture', [AuthController::class, 'updatePicture'])->middleware(['auth:api']);
+    Route::get('/profile-picture', [AuthController::class, 'profileBase64'])->middleware(['auth:api']);
+    Route::get('/candidate-picture/{id}', [AuthController::class, 'candidateProfileBase64']) ;
+
+    
 });
 
 Route::post('/check-user', [UserController::class, 'checkUser']);
@@ -63,4 +75,11 @@ Route::group(['prefix' => 'election-detail'], function() {
     Route::post('/store', [ElectionDetailController::class, 'store'])->middleware(['auth:api']);
     Route::patch('/update', [ElectionDetailController::class, 'update'])->middleware(['auth:api']);
     Route::delete('/delete', [ElectionDetailController::class, 'destroy'])->middleware(['auth:api']);
+});
+
+Route::group(['prefix' => 'raffle'], function() {
+    Route::get('/', [RaffleController::class, 'index'])->middleware(['auth:api']);
+    Route::post('/store', [RaffleController::class, 'store'])->middleware(['auth:api']);
+    Route::patch('/update', [RaffleController::class, 'update'])->middleware(['auth:api']);
+    Route::get('/winners', [RaffleController::class, 'printWinners'])->middleware(['auth:api']);
 });

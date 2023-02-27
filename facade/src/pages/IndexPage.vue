@@ -8,7 +8,8 @@
             <div class="text-h5">{{ key }}</div>
             <div class="q-pa-md row items-start q-gutter-md">
                 <q-card v-for="(candidate, id) in candidates" class="my-card">
-                    <img src="https://cdn.quasar.dev/img/mountains.jpg">
+                    {{ candidatePicture(id) }}
+                    <img src="https://e7.pngegg.com/pngimages/436/585/png-clipart-computer-icons-user-account-graphics-account-icon-vector-icons-silhouette-thumbnail.png" style="width: 300px; height: 240px;">
                     <q-card-section class="text-h6  bg-info">
                         {{ candidate['candidate'] }}
                     </q-card-section>
@@ -30,7 +31,19 @@ export default defineComponent({
     name: 'IndexPage',
     data() {
         return {
-            result: {}
+            result: {},
+            images: []
+        }
+    },
+    methods: {
+        candidatePicture(user_id) {
+            this.$http.getTokenless('api/profile/candidate-picture/' + user_id)
+                .then(response => {
+                    this.images[user_id] = response.data;
+                })
+                .catch(() => {
+                    return 'https://cdn.quasar.dev/img/mountains.jpg';
+                });
         }
     },
     created() {
@@ -46,6 +59,7 @@ export default defineComponent({
 
             });
     }
+
 })
 </script>
 

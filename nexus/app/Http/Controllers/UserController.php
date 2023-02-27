@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Vote;
-use App\Models\Election;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Password;
@@ -32,16 +30,16 @@ class UserController extends Controller
 
 
         $userExists = User::where('employee_id', $request->id)->exists();
-        
+
         if($userExists) {
             $user = User::where('employee_id', $request->id)->first();
 
             $vote = DB::select(
                 'SELECT
-                    count(*)
-                FROM public.votes v
-                LEFT JOIN public.election_details ed ON v.election_detail_id = ed.id
-                LEFT JOIN public.elections e ON ed.election_id = e.id
+                    count(*) as count
+                FROM spmccoop.votes v
+                LEFT JOIN spmccoop.election_details ed ON v.election_detail_id = ed.id
+                LEFT JOIN spmccoop.elections e ON ed.election_id = e.id
                 WHERE v.voter_user_id = :user_id
                 AND e.status = 1',
                 [ 'user_id' => $user->id ]
@@ -94,7 +92,7 @@ class UserController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    
+
 
     public function update(Request $request) {
         $this->prepareRequest($request);
