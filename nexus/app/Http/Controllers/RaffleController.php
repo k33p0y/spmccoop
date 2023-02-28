@@ -23,9 +23,9 @@ class RaffleController extends Controller
                 e.name election,
                 r.price,
                 r.created_at
-            FROM spmccoop.raffles r
-            LEFT JOIN spmccoop.users u ON u.id = r.winner_user_id
-            LEFT JOIN spmccoop.elections e ON e.id = r.election_id
+            FROM public.raffles r
+            LEFT JOIN public.users u ON u.id = r.winner_user_id
+            LEFT JOIN public.elections e ON e.id = r.election_id
             ORDER BY created_at DESC"
         );
         return $winners;
@@ -56,7 +56,7 @@ class RaffleController extends Controller
             'message' => 'Price updated successfully.'
         ], Response::HTTP_OK);
     }
-
+    
 
     public function printWinners(Request $request) {
         $raffle_ids = $request->get('ids');
@@ -124,7 +124,7 @@ class RaffleController extends Controller
 
                     </style>
                 </head>
-
+                
                 <body>
                     <table>
                         <thead>
@@ -164,7 +164,7 @@ class RaffleController extends Controller
 
                     <script type="text/php">
                         if ( isset($pdf) ) {
-                            // OLD
+                            // OLD 
                             // $font = Font_Metrics::get_font("helvetica", "bold");
                             // $pdf->page_text(72, 18, "{PAGE_NUM} of {PAGE_COUNT}", $font, 6, array(255,0,0));
                             // v.0.7.0 and greater

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('election_detail_id');
             $table->integer('voter_user_id');
+            $table->integer('is_verified')->default('0');
             $table->timestamps();
         });
     }

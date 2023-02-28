@@ -45,18 +45,18 @@ class VoteController extends Controller
 
     public function result(Request $request) {
         $election = Election::where('status', 1)->first();
-        /// to be repair
         $electionDetails = ElectionDetail::where('election_id', $election->id)->get();
 
         $countVote = [];
         foreach($electionDetails as $electionDetail) {
-            $count = Vote::where('election_detail_id', $electionDetail->id)->count();
+            $count = Vote::where('election_detail_id', $electionDetail->id)->where('is_verified', '1')->count();
             $candidate = User::where("id", $electionDetail->candidate_user_id)->first();
             $position = Position::where("id", $electionDetail->position_id)->first();
             array_push($countVote, [
                 'count' => $count,
                 'candidate' => $candidate->name,
-                'position' => $position->name
+                'position' => $position->name,
+                'candidate_id' => $candidate->id
             ]);
         }
 
@@ -75,6 +75,7 @@ class VoteController extends Controller
                     array_push($result[$position], [
                         'count' => $vote['count'],
                         'candidate' => $vote['candidate'],
+                        'candidate_id' => $vote['candidate_id']
                     ]);
                 }
             }
@@ -156,13 +157,14 @@ class VoteController extends Controller
                     ELSE 0
                 END
                 voted
-            FROM spmccoop.users u
+
+            FROM public.users u
             LEFT JOIN
                 (
-                    SELECT * FROM spmccoop.votes v
-                    LEFT JOIN spmccoop.election_details ed ON v.election_detail_id = ed.id
-                    LEFT JOIN spmccoop.elections e ON ed.election_id = e.id
-                    WHERE e.status = 1
+                    SELECT * FROM public.votes v
+                    LEFT JOIN public.election_details ed ON v.election_detail_id = ed.id
+                    LEFT JOIN public.elections e ON ed.election_id = e.id
+                    WHERE e.status = 1 and v.is_verified = 1
                 )
 
 
@@ -189,12 +191,12 @@ class VoteController extends Controller
                 c.name candidate,
                 p.name position
 
-            FROM spmccoop.votes v
-            LEFT JOIN spmccoop.users as u ON u.id = v.voter_user_id
-            LEFT JOIN spmccoop.election_details as ed ON ed.id = v.election_detail_id
-            LEFT JOIN spmccoop.positions as p ON p.id = ed.position_id
-            LEFT JOIN spmccoop.elections as e ON e.id = ed.election_id
-            LEFT JOIN spmccoop.users as c ON c.id = ed.candidate_user_id
+            FROM public.votes v
+            LEFT JOIN public.users as u ON u.id = v.voter_user_id
+            LEFT JOIN public.election_details as ed ON ed.id = v.election_detail_id
+            LEFT JOIN public.positions as p ON p.id = ed.position_id
+            LEFT JOIN public.elections as e ON e.id = ed.election_id
+            LEFT JOIN public.users as c ON c.id = ed.candidate_user_id
 
             WHERE
                 v.voter_user_id = :voter_id AND e.status = 1",
@@ -226,11 +228,12 @@ class VoteController extends Controller
         } else {
             $dompdf->stream($date.".pdf");
         }
-        DB::table('election_details as ed')
+        DB::table('votes as v')
+            ->leftJoin('election_details as ed', 'ed.id', '=', 'v.election_detail_id')
             ->leftJoin('elections as e', 'e.id', '=', 'ed.election_id')
-            ->where('ed.created_by', $voter_id)
+            ->where('v.voter_user_id', $voter_id)
             ->where('e.status', '=', 1)
-            ->update(['ed.is_verified'=> '1']); // update to verified if vote is printed
+            ->update(['v.is_verified'=> '1']); // update to verified if vote is printed
     }
 
     public function createHTMLTemplate($votes) {

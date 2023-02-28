@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('position_id');
             $table->integer('candidate_user_id');
             $table->integer('created_by');
-            $table->integer('is_verified')->default('0');
             $table->integer('updated_by')->nullable();
             $table->timestamps();
         });

@@ -41,7 +41,7 @@ Route::group(['prefix' => 'profile'], function() {
     Route::get('/profile-picture', [AuthController::class, 'profileBase64'])->middleware(['auth:api']);
     Route::get('/candidate-picture/{id}', [AuthController::class, 'candidateProfileBase64']) ;
 
-    
+
 });
 
 Route::post('/check-user', [UserController::class, 'checkUser']);
@@ -81,5 +81,5 @@ Route::group(['prefix' => 'raffle'], function() {
     Route::get('/', [RaffleController::class, 'index'])->middleware(['auth:api']);
     Route::post('/store', [RaffleController::class, 'store'])->middleware(['auth:api']);
     Route::patch('/update', [RaffleController::class, 'update'])->middleware(['auth:api']);
-    Route::get('/winners', [RaffleController::class, 'printWinners'])->middleware(['auth:api']);
+    Route::get('/winners', [RaffleController::class, 'printWinners']);
 });

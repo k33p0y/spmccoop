@@ -17,8 +17,8 @@
                     <div class="row items-start q-gutter-md">
                         <div v-for="(candidate, index) in position['candidates']">
                             <q-card v-if="position['count'] > 1" class="my-card">
-                                {{ index }}
-                                <img :src="candidatePicture(index)" style="width: 300px; height: 250px;">
+                                {{ candidatePicture(index) }}
+                                <img :src="this.images[index]" style="width: 300px; height: 250px;">
                                 <q-card-section>
                                     <span>
                                         <q-checkbox :disable="position['count'] <= (form.vote[key]).length && !(form.vote[key]).includes(index)" v-model="form.vote[key]" :val="index" :label="candidate" color="teal" />
@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <q-btn @click="inception = true" color="primary" label="Vote" class="q-mt-sm" />
-                <pre>{{ form }}</pre>
+               
             </div>
         </q-form>
         <q-dialog v-model="inception">
@@ -124,7 +124,7 @@ export default defineComponent({
                             this.list = response.data;
 
                             for(var x in this.list[1]) {
-
+      
                                 if(this.list[1][x]['count'] > 1) {
                                     (this.form.vote)[x]= [];
                                     console.log('vote', this.form.vote);

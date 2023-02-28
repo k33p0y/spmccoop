@@ -8,8 +8,8 @@
             <div class="text-h5">{{ key }}</div>
             <div class="q-pa-md row items-start q-gutter-md">
                 <q-card v-for="(candidate, id) in candidates" class="my-card">
-                    {{ candidatePicture(id) }}
-                    <img src="https://e7.pngegg.com/pngimages/436/585/png-clipart-computer-icons-user-account-graphics-account-icon-vector-icons-silhouette-thumbnail.png" style="width: 300px; height: 240px;">
+                    {{ candidatePicture(candidate['candidate_id']) }}
+                    <img :src="images[candidate['candidate_id']]" style="width: 300px; height: 300px;">
                     <q-card-section class="text-h6  bg-info">
                         {{ candidate['candidate'] }}
                     </q-card-section>
@@ -19,8 +19,6 @@
                 </q-card>
             </div>
         </div>
-
-
     </q-page>
 </template>
 
@@ -66,6 +64,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .my-card {
     width: 100%;
-    max-width: 250px;
+    max-width: 300px;
 }
 </style>
