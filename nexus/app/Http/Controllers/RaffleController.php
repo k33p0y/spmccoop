@@ -22,7 +22,8 @@ class RaffleController extends Controller
                 u.name winner,
                 e.name election,
                 r.price,
-                r.created_at
+                r.created_at,
+                e.status election_status
             FROM public.raffles r
             LEFT JOIN public.users u ON u.id = r.winner_user_id
             LEFT JOIN public.elections e ON e.id = r.election_id
@@ -32,6 +33,8 @@ class RaffleController extends Controller
     }
 
     public function store(Request $request) {
+        // $raffle = Raffle::where('winner_user_id', $request->winner_user_id)->where('election_id', $request->election_id)->get();
+
         $this->prepareRequest($request);
 
         $winner = new Raffle();
@@ -56,7 +59,22 @@ class RaffleController extends Controller
             'message' => 'Price updated successfully.'
         ], Response::HTTP_OK);
     }
-    
+
+    public function getCurrentWinners(Request $request) {
+        $winners = DB::select(
+            "SELECT
+                r.id raffle_id,
+                u.name winner,
+                u.id winner_id
+                -- e.name election
+            FROM public.raffles r
+            LEFT JOIN public.users u ON u.id = r.winner_user_id
+            LEFT JOIN public.elections e ON e.id = r.election_id
+            WHERE e.status = 1
+            ORDER BY r.created_at DESC"
+        );
+        return $winners;
+    }
 
     public function printWinners(Request $request) {
         $raffle_ids = $request->get('ids');
@@ -124,7 +142,7 @@ class RaffleController extends Controller
 
                     </style>
                 </head>
-                
+
                 <body>
                     <table>
                         <thead>
@@ -164,7 +182,7 @@ class RaffleController extends Controller
 
                     <script type="text/php">
                         if ( isset($pdf) ) {
-                            // OLD 
+                            // OLD
                             // $font = Font_Metrics::get_font("helvetica", "bold");
                             // $pdf->page_text(72, 18, "{PAGE_NUM} of {PAGE_COUNT}", $font, 6, array(255,0,0));
                             // v.0.7.0 and greater

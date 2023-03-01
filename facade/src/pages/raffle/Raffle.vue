@@ -6,7 +6,7 @@
 			<q-breadcrumbs-el label="Play" icon="sports_basketball" />
 		</q-breadcrumbs>
 		<p class="text-h4 q-my-md ">{{ electionName }} Raffle Game</p>
-		
+
 		<div class="row justify-center q-mt-xl">
 			<q-card class="my-card col-md-6 col-sm-10 card-raffle">
 				<q-card-section class="q-ma-sm">
@@ -27,11 +27,13 @@
 					<div v-show="showImage" class="row justify-center">
 						<p class="txt-winner text-h5 text-weight-bold">WINNER:</p>
 					</div>
-					<div v-show="showPicker" class="row justify-center">
-						<p class="txt-name text-h1 text-weight-bold"
-						style="color: teal; text-align: center;">
-						</p>
-					</div>
+          <Transition name="bounce">
+            <div v-show="showImage" class="row justify-center">
+              <p class="txt-name text-h1 text-weight-bold"
+              style="color: teal; text-align: center;">
+              </p>
+            </div>
+          </Transition>
 					<Transition name="bounce">
 						<div v-show="showImage" class="row justify-center q-pa-md q-gutter-sm">
 							<q-img
@@ -42,23 +44,8 @@
 						</div>
 					</Transition>
 					<div class="row justify-center">
-						<p class="text-h5">Total participants: {{ totalParticipants }}</p>
-					</div>
-					<div class="row justify-center">
-						<q-btn @click="displayNames" class="glossy q-ma-sm" color="teal" :label="winners.length ? 'Pick another name' : 'Start'" :disabled="btnDisabled"/>
-						<q-btn @click="resetRaffle" class="glossy q-ma-sm" color="teal" label="Reset Raffle" v-if="winners.length" :disabled="btnDisabled"/>
-					</div>
-
-					<div class="q-mt-lg" v-show="winners.length > 1">
-						<q-separator class="" inset />
-						<div class="row justify-center q-mt-md">
-							<p class="text-weight-bold">PREVIOUS WINNERS:</p>
-						</div>
-						<div v-for="(value, index) in winners.slice().reverse()">
-							<div class="row justify-center q-mt-xs">
-								<p v-if="index > 0">{{ value['name'] }}</p>
-							</div>
-						</div>
+						<q-btn @click="pickWinner" class="glossy q-ma-sm" color="teal" :label="participants.winners.length ? 'Pick another name' : 'Start'" :disabled="btnDisabled"/>
+						<q-btn @click="resetRaffle" class="glossy q-ma-sm" color="teal" label="Clear Price" v-if="participants.winners.length" :disabled="btnDisabled"/>
 					</div>
 				</q-card-section>
 			</q-card>
@@ -74,112 +61,111 @@ import { Transition } from 'vue';
 	export default {
     name: "RouletteIndex",
     data() {
-        return {
-            voters: {
-                rows: []
-            },
-			form: {
-                price: null
-            },
-            totalParticipants: 0,
-            winners: [],
-            showPicker: false,
-            showImage: false,
-			electionName: '',
-			electionId: null,
-			btnDisabled: false,
-        };
+      return {
+        participants: {
+          winners: [],
+          list: []
+        },
+        form: {
+          price: null
+        },
+        showPicker: false,
+        showImage: false,
+        electionName: '',
+        electionId: null,
+        btnDisabled: false,
+      };
     },
     methods: {
-		getActiveElection() {
-			this.$http.get('api/election')
-				.then(response => {
-					if (response.data) {
-						this.electionName = response.data.filter(this.getElectionName)[0]['name'];
-						this.electionId = response.data.filter(this.getElectionName)[0]['id'];
-					}
-				})
-				.catch(error => {
-					this.$http.requestError(error);
-					console.log(error);
-				})
-		},
-        getVoters() {
-            this.$http.get("api/election/vote/voter-list")
-                .then(response => {
-                this.voters.rows = response.data.filter(this.getVoterName);
-                this.totalParticipants = this.voters.rows.length;
-            })
-                .catch(error => {
-                this.$http.requestError(error);
-                console.log(error);
-            });
-        },
-        displayNames() {
-			if (!this.form.price) alert('Please input price for the raffle.')
-			else {
-				this.btnDisabled = true
-				this.showImage = false;
-				this.showPicker = true;
-				let obj = this.voters.rows;
-				var name = document.getElementsByClassName("txt-name")[0];
-				for (var x = 0, ln = obj.length; x < ln; x++) {
-					let self = this;
-					setTimeout(function (y) {
-						name.innerHTML = obj[y]["name"];
-						if (y == ln - 1)
-							self.getWinner();
-					}, x * 30, x); // we're passing x
-				}
-			}
-        },
-        getVoterName(obj) {
-            return obj["voted"] == 1;
-        },
-		getElectionName(obj) {
-            return obj["status"] == 1;
-        },
-        getWinner() {
-            var name = document.getElementsByClassName("txt-name")[0];
-            const random = Math.floor(Math.random() * this.voters.rows.length);
-            name.innerHTML = this.voters.rows[random]["name"];
-			this.executeStore(this.voters.rows[random]["id"], this.form.price)
-            const index = this.voters.rows.indexOf(this.voters.rows[random]);
-			this.winners.push({id: this.voters.rows[random]['id'], name: this.voters.rows[random]['name']})
-            if (index > -1) { // only splice array when item is found
-                this.voters.rows.splice(index, 1); // 2nd parameter means remove one item only
-                this.totalParticipants = this.voters.rows.length;
-                this.showImage = true;
-				this.btnDisabled = false;
+      getActiveElection() {
+        this.$http.get('api/election')
+          .then(response => {
+            if (response.data) {
+              this.electionName = response.data.filter(this.getElectionName)[0]['name'];
+              this.electionId = response.data.filter(this.getElectionName)[0]['id'];
             }
-        },
-		resetRaffle() {
-			this.voters.rows = []
-			this.totalParticipants = 0
-			this.winners = []
-			this.showPicker = false
-			this.showImage = false
-			this.form.price = ''
-			this.getVoters();
-		},
-		executeStore(user_id, price) {
-			var params = {
-				election_id: this.electionId,
-				winner_user_id: user_id,
-				price: price
-			}
-            this.$http.post('api/raffle/store', params)
-                .then(() => {
-                })
-                .catch(error => {
-                    this.loading = false;
-                    this.errors = this.$http.requestError(error);
-                });
-        },
+          })
+          .catch(error => {
+            this.$http.requestError(error);
+            console.log(error);
+          })
+      },
+      getVoters() {
+          this.$http.get("api/election/vote/voter-list")
+            .then(response => {
+              this.participants.list = response.data.filter( obj => obj['voted'] == 1)
+          })
+              .catch(error => {
+              this.$http.requestError(error);
+              console.log(error);
+          });
+      },
+      getElectionName(obj) {
+        return obj["status"] == 1;
+      },
+      pickWinner() {
+        if (!this.form.price) alert('Please input price for the raffle.')
+        else {
+          this.showImage = false
+          this.showPicker = false
+          var name = document.getElementsByClassName("txt-name")[0];
+          for (let i=0; i<this.participants.winners.length; i++) {
+            const index = this.participants.list.findIndex(p => p.name == this.participants.winners[i]['winner']);
+            // console.log(index)
+            // console.log(this.participants.list[index])
+            if (index > -1) this.participants.list.splice(index, 1);
+          }
+          if (this.participants.list.length) {
+            // console.log(this.participants.list, 'list')
+            // console.log(this.participants.winners, 'winners')
+            const random = Math.floor(Math.random() * this.participants.list.length);
+            // console.log(random)
+            // console.log(this.participants.list[random]["name"])
+            name.innerHTML = this.participants.list[random]["name"];
+            this.showImage = true
+            this.executeStore(this.participants.list[random]["id"], this.form.price)
+            this.getAllWinners();
+            this.getVoters();
+          } else alert('No participants left');
+        }
+      },
+      resetRaffle() {
+        this.totalParticipants = 0
+        this.showPicker = false
+        this.showImage = false
+        this.form.price = ''
+        this.getAllWinners();
+        this.getVoters();
+      },
+      executeStore(user_id, price) {
+        var params = {
+          election_id: this.electionId,
+          winner_user_id: user_id,
+          price: price
+        }
+        this.$http.post('api/raffle/store', params)
+          .then(() => {
+          })
+          .catch( error => {
+            this.loading = false;
+            // this.errors = this.$http.requestError(error);
+          });
+      },
+      getAllWinners() { // get all winners for the current active election
+        this.$http.get('api/raffle/current/winners')
+          .then(response => {
+            this.participants.winners = response.data;
+            // console.log(response.data, 'winners')
+          })
+          .catch(error => {
+            this.$http.requestError(error);
+          })
+      },
     },
     created() {
-        this.getVoters();
-		this.getActiveElection();
+      this.getAllWinners();
+      this.getVoters();
+      this.getActiveElection();
     },
     components: { Transition }
 };

@@ -208,32 +208,41 @@ class VoteController extends Controller
 		$options->setIsPhpEnabled(true);
 		$dompdf->setOptions($options);
 
-        $dompdf->loadHtml($this->createHTMLTemplate($votes));
+        if ($votes) {
+            $dompdf->loadHtml($this->createHTMLTemplate($votes));
 
-        // 1 inch = 72 point
-        // 1 inch = 2.54 cm
-        // 10 cm = 10/2.54*72 = 283.464566929
-        // 20 cm = 10/2.54*72 = 566.929133858
-        // 8.5 x 5.5 half crosswise (612 x 396)
-        $customPaper = array(0,0,612,396);
-        // (Optional) Setup the paper size and orientation
-		// $dompdf->setPaper('folio', 'landscape');
-		$dompdf->setPaper($customPaper);
-		// Render the HTML as PDF
-		$dompdf->render();
+            // 1 inch = 72 point
+            // 1 inch = 2.54 cm
+            // 10 cm = 10/2.54*72 = 283.464566929
+            // 20 cm = 10/2.54*72 = 566.929133858
+            // 8.5 x 5.5 half crosswise (612 x 396)
+            $customPaper = array(0,0,612,396);
+            // (Optional) Setup the paper size and orientation
+            // $dompdf->setPaper('folio', 'landscape');
+            $dompdf->setPaper($customPaper);
+            // Render the HTML as PDF
+            $dompdf->render();
 
-        $date = str_replace(".", "", date('d-m-y'));
-        if (count($votes)) {
-            $dompdf->stream($votes[0]->voter."_".$date.".pdf");
+            $date = str_replace(".", "", date('d-m-y'));
+            if (count($votes)) {
+                $dompdf->stream($votes[0]->voter."_".$date.".pdf");
+            } else {
+                $dompdf->stream($date.".pdf");
+            }
+            DB::table('votes as v')
+                ->leftJoin('election_details as ed', 'ed.id', '=', 'v.election_detail_id')
+                ->leftJoin('elections as e', 'e.id', '=', 'ed.election_id')
+                ->where('v.voter_user_id', $voter_id)
+                ->where('e.status', '=', 1)
+                ->update(['v.is_verified'=> '1']); // update to verified if vote is printed
         } else {
+            $dompdf->loadHtml('Member did not cast vote yet.');
+            $customPaper = array(0,0,612,396);
+            $dompdf->setPaper($customPaper);
+            $dompdf->render();
+            $date = str_replace(".", "", date('d-m-y'));
             $dompdf->stream($date.".pdf");
         }
-        DB::table('votes as v')
-            ->leftJoin('election_details as ed', 'ed.id', '=', 'v.election_detail_id')
-            ->leftJoin('elections as e', 'e.id', '=', 'ed.election_id')
-            ->where('v.voter_user_id', $voter_id)
-            ->where('e.status', '=', 1)
-            ->update(['v.is_verified'=> '1']); // update to verified if vote is printed
     }
 
     public function createHTMLTemplate($votes) {

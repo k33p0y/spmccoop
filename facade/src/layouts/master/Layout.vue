@@ -223,20 +223,34 @@ export default {
                     "icon": 'casino',
                     "level": 0,
                     "permissions": 1,
-                    "endpoint": 1
+                    "endpoint": 0,
+                    "children": [
+                      {
+                        "id": 8,
+                        "label": "INDEX",
+                        "parent_id": 7,
+                        "order": 8,
+                        "navigation_path": '/raffle-winners',
+                        "masked_navigation_path": '/raffle-winners',
+                        "icon": 'ballot',
+                        "level": 1,
+                        "permissions": 1,
+                        "endpoint": 1
+                      },
+                      {
+                        "id": 9,
+                        "label": "PLAY",
+                        "parent_id": 7,
+                        "order": 9,
+                        "navigation_path": '/raffle',
+                        "masked_navigation_path": '/raffle',
+                        "icon": 'sports_basketball',
+                        "level": 1,
+                        "permissions": 1,
+                        "endpoint": 1
+                      }
+                    ]
                 },
-                {
-                    "id": 8,
-                    "label": "PLAY",
-                    "parent_id": 7,
-                    "order": 8,
-                    "navigation_path": '/raffle',
-                    "masked_navigation_path": '/raffle',
-                    "icon": 'casino',
-                    "level": 1,
-                    "permissions": 1,
-                    "endpoint": 1
-                }
             ]
 
         };

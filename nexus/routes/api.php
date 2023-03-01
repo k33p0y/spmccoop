@@ -81,5 +81,6 @@ Route::group(['prefix' => 'raffle'], function() {
     Route::get('/', [RaffleController::class, 'index'])->middleware(['auth:api']);
     Route::post('/store', [RaffleController::class, 'store'])->middleware(['auth:api']);
     Route::patch('/update', [RaffleController::class, 'update'])->middleware(['auth:api']);
-    Route::get('/winners', [RaffleController::class, 'printWinners']);
+    Route::get('/current/winners', [RaffleController::class, 'getCurrentWinners'])->middleware(['auth:api']);
+    Route::get('/print/winners', [RaffleController::class, 'printWinners']);
 });
