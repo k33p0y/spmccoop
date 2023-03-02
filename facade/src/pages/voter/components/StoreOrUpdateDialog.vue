@@ -112,6 +112,7 @@ export default {
             this.row.id = null;
             this.form.password = null;
             this.form.passwordConfirmation = null;
+            this.$parent.$parent.$parent.executeLoadTableRows()
         },
         params() {
             var params = {
@@ -131,34 +132,34 @@ export default {
             }
             return params;
         },
-        executeStore() {
-            this.errors = {};
-            this.loading = true;
-            this.$http.post('api/member/store', this.params())
-                .then(() => {
-                    this.$parent.$parent.$parent.executeLoadTableRows()
-                    this.closeDialog();
-                    this.loading = false;
-                })
-                .catch(error => {
-                    this.loading = false;
-                    this.errors = this.$http.requestError(error);
-                });
-        },
-        executeUpdate() {
-            this.errors = {};
-            this.loading = true;
-            this.$http.patch('api/member/update', this.params())
-                .then(() => {
-                    this.$parent.$parent.$parent.executeLoadTableRows()
-                    this.closeDialog();
-                    this.loading = false;
-                })
-                .catch(error => {
-                    this.loading = false;
-                    this.errors = this.$http.requestError(error);
-                });
-        },
+        // executeStore() {
+        //     this.errors = {};
+        //     this.loading = true;
+        //     this.$http.post('api/member/store', this.params())
+        //         .then(() => {
+        //             this.$parent.$parent.$parent.executeLoadTableRows()
+        //             this.closeDialog();
+        //             this.loading = false;
+        //         })
+        //         .catch(error => {
+        //             this.loading = false;
+        //             this.errors = this.$http.requestError(error);
+        //         });
+        // },
+        // executeUpdate() {
+        //     this.errors = {};
+        //     this.loading = true;
+        //     this.$http.patch('api/member/update', this.params())
+        //         .then(() => {
+        //             this.$parent.$parent.$parent.executeLoadTableRows()
+        //             this.closeDialog();
+        //             this.loading = false;
+        //         })
+        //         .catch(error => {
+        //             this.loading = false;
+        //             this.errors = this.$http.requestError(error);
+        //         });
+        // },
         printIndividualVotes(id) {
             return `http://192.168.1.159:8080/api/election/vote/${id}/print/votes/`;
         }

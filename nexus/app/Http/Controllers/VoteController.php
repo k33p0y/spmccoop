@@ -183,9 +183,11 @@ class VoteController extends Controller
 
     public function printIndividualVotes(Request $request) {
         $voter_id = $request->voter_id;
+        $positions = DB::select("SELECT p.name FROM public.positions p ORDER BY p.id ASC LIMIT 3");
 
         $votes = DB::select(
             "SELECT
+                u.employee_id,
                 u.name voter,
                 e.name election,
                 c.name candidate,
@@ -202,6 +204,7 @@ class VoteController extends Controller
                 v.voter_user_id = :voter_id AND e.status = 1",
                 ['voter_id' => $voter_id]
         );
+        // return $votes;
 
         $dompdf = new Dompdf();
 		$options = $dompdf->getOptions();
@@ -209,7 +212,7 @@ class VoteController extends Controller
 		$dompdf->setOptions($options);
 
         if ($votes) {
-            $dompdf->loadHtml($this->createHTMLTemplate($votes));
+            $dompdf->loadHtml($this->createHTMLTemplate($votes, $positions));
 
             // 1 inch = 72 point
             // 1 inch = 2.54 cm
@@ -245,16 +248,29 @@ class VoteController extends Controller
         }
     }
 
-    public function createHTMLTemplate($votes) {
-        $rows = '';
-        for ($i=0; $i<count($votes); $i++){
-            $rows = $rows.'
-            <tr style="border-bottom: 1px solid black;">
-                <td class="table-body-row" style="width: 40%">'.$votes[$i]->position.'</td>
-                <td class="table-body-row" style="width: 60%">'.$votes[$i]->candidate.'</td>
-            </tr>
+    public function createHTMLTemplate($votes, $positions) {
+        $date = str_replace(".", "", date('F j, Y'));
+        $position_headers = '';
+        for ($i=0; $i<count($positions); $i++) {
+            $position_headers = $position_headers.'
+                <td class="table-body-head center-text" style="width: 33%">'.strtoupper($positions[$i]->name).'</td>
             ';
         }
+        $bod = '';
+        $aud_com = '';
+        $el_com = '';
+        for ($i=0; $i<count($votes); $i++) {
+            if ($votes[$i]->position == 'Board of Directors') $bod = $bod.''.$votes[$i]->candidate.'<br><br>';
+            elseif ($votes[$i]->position == 'Audit Committee') $aud_com = $aud_com.''.$votes[$i]->candidate.'<br><br>';
+            elseif ($votes[$i]->position == 'Election Committee') $el_com = $el_com.''.$votes[$i]->candidate.'<br><br>';
+        }
+        $rows = '
+        <tr style="border-bottom: 1px solid black; text-align: left; vertical-align: text-top;">
+            <td class="table-body-row" style="width: 33%;">'.$bod.'</td>
+            <td class="table-body-row" style="width: 34%;">'.$aud_com.'</td>
+            <td class="table-body-row" style="width: 33%;">'.$el_com.'</td>
+        </tr>
+        ';
         return '
             <!DOCTYPE html>
             <html lang="en">
@@ -281,22 +297,29 @@ class VoteController extends Controller
                     <table>
                         <thead>
                             <tr>
-                                <th style="font-size: 15px" colspan="2">SOUTHERN PHILIPPINES MEDICAL CENTER COOPERATIVE</th>
+                                <th style="font-size: 12px; font-weight: normal;" colspan="3">Southern Philippines Medical Center</th>
                             </tr>
                             <tr>
-                                <th style="font-size: 15px" colspan="2">EMPLOYEES CREDIT COOPERATIVE</th>
+                                <th style="font-size: 13px" colspan="3">Employees Credit Cooperative</th>
                             </tr>
                             <tr style="margin-top: 5px; margin-bottom: 5px;">
-                                <th style="font-size: 14px"  colspan="2"><u>'.$votes[0]->election.'</u></th>
+                                <th style="font-size: 15px;"  colspan="3"><u>OFFICIAL BALLOT</u></th>
                             </tr>
                             <tr style="margin-top: 5px; margin-bottom: 5px;">
-                                <th style="font-size: 14px"  colspan="2">Summary of Votes</th>
+                                <th style="font-size: 11px"  colspan="3">'.$date.'</th>
                             </tr><br><br>
                         </thead>
                         <tbody style="margin-top: 5px;">
                             <tr>
-                                <td class="table-body-head center-text" style="width: 40%">Position</td>
-                                <td class="table-body-head center-text" style="width: 60%">Candidate</td>
+                                <td class="table-body-row" style="font-size: 11px">
+                                    Emp. ID: <span style="font-weight: bold; text-decoration: underline;">'.$votes[0]->employee_id.'</span>
+                                </td>
+                                <td class="table-body-row" style="font-size: 11px" colspan="2">
+                                    Voter\'s Name:  <span style="font-weight: bold; text-decoration: underline;">'.strtoupper($votes[0]->voter).'</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                '.$position_headers.'
                             </tr>'.$rows.'
                         </tbody>
                     </table>
@@ -305,12 +328,12 @@ class VoteController extends Controller
                         <tbody>
                             <tr>
                                 <td style="width: 30%;"></td>
-                                <td class="center-text" style="font-size: 13px; border-bottom: 1px solid black; width: 40%;" >'.$votes[0]->voter.'</td>
+                                <td class="center-text" style="font-size: 13px; border-bottom: 1px solid black; width: 40%;" ></td>
                                 <td style="width: 30%;"></td>
                             </tr>
                             <tr>
                                 <td style="width: 30%;"></td>
-                                <td class="center-text" style="font-size: 10px; width: 40%;" >Name and Signature</td>
+                                <td class="center-text" style="font-size: 10px; width: 40%;" >Voter\'s Signature</td>
                                 <td style="width: 30%;"></td>
                             </tr>
                         </tbody>

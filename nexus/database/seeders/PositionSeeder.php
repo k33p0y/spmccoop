@@ -17,35 +17,35 @@ class PositionSeeder extends Seeder
     {
         DB::table('positions')->insert([
             [
-                'name' => 'President',
-                'created_by' => 1,
-                'created_at' => date('Y-m-d H:i:s'),
-            ], 
-            [
-                'name' => 'Vice President',
+                'name' => 'Board of Directors',
                 'created_by' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'name' => 'Secretary',
+                'name' => 'Audit Committee',
                 'created_by' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'name' => 'Treasurer',
+                'name' => 'Election Committee',
                 'created_by' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
             ],
-            [
-                'name' => 'Auditor',
-                'created_by' => 1,
-                'created_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'name' => 'Liaison',
-                'created_by' => 1,
-                'created_at' => date('Y-m-d H:i:s'),
-            ]
+            // [
+            //     'name' => 'Treasurer',
+            //     'created_by' => 1,
+            //     'created_at' => date('Y-m-d H:i:s'),
+            // ],
+            // [
+            //     'name' => 'Auditor',
+            //     'created_by' => 1,
+            //     'created_at' => date('Y-m-d H:i:s'),
+            // ],
+            // [
+            //     'name' => 'Liaison',
+            //     'created_by' => 1,
+            //     'created_at' => date('Y-m-d H:i:s'),
+            // ]
         ]);
     }
 }

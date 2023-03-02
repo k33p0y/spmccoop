@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UserSeeder::class);
         // $this->call(ElectionSeeder::class);
-        // $this->call(PositionSeeder::class);
+        $this->call(PositionSeeder::class);
         // $this->call(ElectionDetailSeeder::class);
         // $this->call(VoteSeeder::class);
     }
