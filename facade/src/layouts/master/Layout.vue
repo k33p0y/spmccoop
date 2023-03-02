@@ -3,7 +3,7 @@
         <q-header v-if="$q.screen.height > 599" class="bg-grey-10 text-white">
             <q-toolbar>
                 <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
-                <q-toolbar-title @click="playNotificationSound()">SPMC</q-toolbar-title>
+                <q-toolbar-title @click="playNotificationSound()">SPMCECC</q-toolbar-title>
 
                 <q-btn round class="q-mr-sm" icon="notifications">
                     <q-badge class="q-mt-sm q-py-xs" color="red-7" floating v-if="notifCount > 0">{{

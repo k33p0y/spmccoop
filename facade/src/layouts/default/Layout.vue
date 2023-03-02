@@ -12,7 +12,7 @@
         /> -->
 
                 <q-toolbar-title>
-                    SPMC Cooperative
+                  SPMC Employees Credit Cooperative
                 </q-toolbar-title>
 
                 <div @click="goToSignIn()">Sign In</div>
