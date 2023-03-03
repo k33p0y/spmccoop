@@ -27,13 +27,14 @@
 					<div v-show="showImage" class="row justify-center">
 						<p class="txt-winner text-h5 text-weight-bold">WINNER:</p>
 					</div>
-          <Transition name="bounce">
             <div v-show="showImage" class="row justify-center">
               <p class="txt-name text-h1 text-weight-bold"
-              style="color: teal; text-align: center;">
+              style="color: teal; text-align: center;">{{ currentWinner }}
               </p>
             </div>
-          </Transition>
+            <div v-show="showSpinner" class="row justify-center q-mb-lg">
+              <div class="loader"></div>
+            </div>
 					<Transition name="bounce">
 						<div v-show="showImage" class="row justify-center q-pa-md q-gutter-sm">
 							<q-img
@@ -46,6 +47,7 @@
 					<div class="row justify-center">
 						<q-btn @click="pickWinner" class="glossy q-ma-sm" color="teal" :label="participants.winners.length ? 'Pick another name' : 'Start'" :disabled="btnDisabled"/>
 						<q-btn @click="resetRaffle" class="glossy q-ma-sm" color="teal" label="Clear Price" v-if="participants.winners.length" :disabled="btnDisabled"/>
+						<q-btn @click="removeWinner" class="glossy q-ma-sm" color="red" label="Invalidate" v-show="showImage" :disabled="btnDisabled"/>
 					</div>
 				</q-card-section>
 			</q-card>
@@ -69,11 +71,12 @@ import { Transition } from 'vue';
         form: {
           price: null
         },
-        showPicker: false,
         showImage: false,
+        showSpinner: false,
         electionName: '',
         electionId: null,
         btnDisabled: false,
+        currentWinner: '',
       };
     },
     methods: {
@@ -107,32 +110,25 @@ import { Transition } from 'vue';
         if (!this.form.price) alert('Please input price for the raffle.')
         else {
           this.showImage = false
-          this.showPicker = false
-          var name = document.getElementsByClassName("txt-name")[0];
           for (let i=0; i<this.participants.winners.length; i++) {
             const index = this.participants.list.findIndex(p => p.name == this.participants.winners[i]['winner']);
-            // console.log(index)
-            // console.log(this.participants.list[index])
             if (index > -1) this.participants.list.splice(index, 1);
           }
           if (this.participants.list.length) {
-            // console.log(this.participants.list, 'list')
-            // console.log(this.participants.winners, 'winners')
             const random = Math.floor(Math.random() * this.participants.list.length);
-            // console.log(random)
-            // console.log(this.participants.list[random]["name"])
-            name.innerHTML = this.participants.list[random]["name"];
-            this.showImage = true
+            this.btnDisabled = true
+            this.showSpinner = true
             this.executeStore(this.participants.list[random]["id"], this.form.price)
-            this.getAllWinners();
-            this.getVoters();
-          } else alert('No participants left');
+          } else {
+            this.form.price = ''
+            this.currentWinner = ''
+            alert('No participants left');
+          }
         }
       },
       resetRaffle() {
-        this.totalParticipants = 0
-        this.showPicker = false
         this.showImage = false
+        this.showSpinner = false
         this.form.price = ''
         this.getAllWinners();
         this.getVoters();
@@ -144,7 +140,15 @@ import { Transition } from 'vue';
           price: price
         }
         this.$http.post('api/raffle/store', params)
-          .then(() => {
+          .then(response => {
+              this.getAllWinners();
+              this.getVoters();
+              setTimeout(( () => {
+                this.currentWinner = response.data['winner']
+                this.showSpinner = false
+                this.showImage = true
+                this.btnDisabled = false
+              }), 1000);
           })
           .catch( error => {
             this.loading = false;
@@ -155,12 +159,31 @@ import { Transition } from 'vue';
         this.$http.get('api/raffle/current/winners')
           .then(response => {
             this.participants.winners = response.data;
-            // console.log(response.data, 'winners')
           })
           .catch(error => {
             this.$http.requestError(error);
           })
       },
+      removeWinner() {
+        let answer = confirm("Are you sure you want to invalidate current winner?");
+        if (answer) {
+          let index = this.participants.winners.findIndex(w => w.winner == this.currentWinner);
+          var params = {
+            raffle_id: this.participants.winners[index]['raffle_id']
+          }
+          this.$http.patch('api/raffle/invalidate/winner', params)
+            .then(() => {
+              this.getAllWinners();
+              this.getVoters();
+              this.currentWinner = ''
+              this.showImage = false;
+            })
+            .catch( error => {
+              this.loading = false;
+              // this.errors = this.$http.requestError(error);
+            });
+        }
+      }
     },
     created() {
       this.getAllWinners();
@@ -173,7 +196,7 @@ import { Transition } from 'vue';
 
 <style lang="scss" scoped>
 	.bounce-enter-active {
-		animation: bounce-in 0.5s;
+		animation: bounce-in .2s;
 	}
 	.bounce-leave-active {
 		animation: bounce-in 0s reverse;
@@ -189,4 +212,23 @@ import { Transition } from 'vue';
 			transform: scale(1);
 		}
 	}
+
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  /* Safari */
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
 </style>

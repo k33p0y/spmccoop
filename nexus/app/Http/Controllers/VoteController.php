@@ -164,7 +164,7 @@ class VoteController extends Controller
                     SELECT * FROM public.votes v
                     LEFT JOIN public.election_details ed ON v.election_detail_id = ed.id
                     LEFT JOIN public.elections e ON ed.election_id = e.id
-                    WHERE e.status = 1 and v.is_verified = 1
+                    WHERE e.status = 1
                 )
 
 

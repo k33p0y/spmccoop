@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Raffle;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Dompdf\Dompdf;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ class RaffleController extends Controller
             FROM public.raffles r
             LEFT JOIN public.users u ON u.id = r.winner_user_id
             LEFT JOIN public.elections e ON e.id = r.election_id
+            WHERE r.is_valid = 1
             ORDER BY created_at DESC"
         );
         return $winners;
@@ -43,8 +45,9 @@ class RaffleController extends Controller
         $winner->price = $request->price;
         $winner->save();
 
+        $user = User::where('id', $request->winner_user_id)->first();
         return response([
-            'message' => 'Winner saved to database.'
+            'message' => 'Winner saved to database.', 'winner' => $user->name
         ], Response::HTTP_CREATED);
     }
 
@@ -57,6 +60,17 @@ class RaffleController extends Controller
 
         return response([
             'message' => 'Price updated successfully.'
+        ], Response::HTTP_OK);
+    }
+
+    public function invalidateWinner(Request $request) {
+        $this->prepareRequest($request);
+        $raffle = Raffle::findOrFail($request->raffle_id);
+        $raffle->is_valid = 0;
+        $raffle->save();
+
+        return response([
+            'message' => 'Winner invalidated.'
         ], Response::HTTP_OK);
     }
 
@@ -81,7 +95,7 @@ class RaffleController extends Controller
         $winners = DB::table('raffles as r')
             ->leftJoin('users as u', 'u.id', '=', 'r.winner_user_id')
             ->leftJoin('elections as e', 'e.id', '=', 'r.election_id')
-            ->select('u.id as user_id', 'u.name', 'r.price', 'e.name as election')
+            ->select('u.id as user_id', 'u.name', 'r.price', 'e.name as election', 'r.id as raffle_id')
             ->whereIn('r.id', $raffle_ids)
             ->get();
         $dompdf = new Dompdf();
@@ -111,13 +125,13 @@ class RaffleController extends Controller
     }
 
     public function createHTMLTemplate($winners) {
-
+        $date = str_replace(".", "", date('F j, Y'));
         $rows = '';
         for ($i=0; $i<count($winners); $i++){
             $rows = $rows.'
             <tr style="border-bottom: 1px solid black;">
-                <td class="table-body-row" style="width: 40%">'.$winners[$i]->name.'</td>
-                <td class="table-body-row" style="width: 60%">'.$winners[$i]->price.'</td>
+                <td class="table-body-row" style="width: 40%; font-size: 8px; font-weight: normal">'.$winners[$i]->name.'</td>
+                <td class="table-body-row" style="width: 60%; font-size: 8px; font-weight: normal">'.$winners[$i]->price.'</td>
             </tr>
             ';
         }
@@ -147,19 +161,22 @@ class RaffleController extends Controller
                     <table>
                         <thead>
                             <tr>
-                                <th style="font-size: 15px" colspan="2">SOUTHERN PHILIPPINES MEDICAL CENTER</th>
+                                <th style="font-size: 12px; font-weight: normal;" colspan="2">Southern Philippines Medical Center</th>
                             </tr>
                             <tr>
-                                <th style="font-size: 15px" colspan="2">EMPLOYEES CREDIT COOPERATIVE</th>
+                                <th style="font-size: 13px" colspan="2">Employees Credit Cooperative</th>
                             </tr>
                             <tr style="margin-top: 5px; margin-bottom: 5px;">
-                                <th style="font-size: 14px"  colspan="2">Raffle Winners</th>
+                                <th style="font-size: 15px;"  colspan="2"><u>RAFFLE WINNERS</u></th>
+                            </tr>
+                            <tr style="margin-top: 5px; margin-bottom: 5px;">
+                                <th style="font-size: 11px"  colspan="2">'.$date.'</th>
                             </tr><br><br>
                         </thead>
                         <tbody style="margin-top: 5px;">
                             <tr>
-                                <td class="table-body-head center-text" style="width: 40%">Name</td>
-                                <td class="table-body-head center-text" style="width: 60%">Price</td>
+                                <td class="table-body-head center-text" style="width: 40%;">Winner</td>
+                                <td class="table-body-head center-text" style="width: 60%;">Price</td>
                             </tr>'.$rows.'
                         </tbody>
                     </table>
@@ -173,7 +190,7 @@ class RaffleController extends Controller
                             </tr>
                             <tr>
                                 <td style="width: 30%;"></td>
-                                <td class="center-text" style="font-size: 10px; width: 40%;" >Name and Signature</td>
+                                <td class="center-text" style="font-size: 10px; width: 40%;" >Verified by</td>
                                 <td style="width: 30%;"></td>
                             </tr>
                         </tbody>

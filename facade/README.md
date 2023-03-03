@@ -1,6 +1,6 @@
 # Quasar App (facade)
 
-A Quasar Project
+A SPMCECC Project
 
 ## Install the dependencies
 ```bash

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('price');
             $table->integer('winner_user_id');
             $table->integer('election_id');
+            $table->integer('is_valid')->default('1');
             $table->timestamps();
         });
     }
