@@ -37,7 +37,7 @@
             <div class="flex flex-center q-mb-sm">
                 <!-- <img class alt="spmc_logo" id="spmc_logo" src="~assets/logos/spmc_logo_wt.svg" height="250" /> -->
             </div>
-            <div class="text-h6 text-white text-center">Southern Philippines Medical Center Cooperative</div>
+            <div class="text-h6 text-white text-center">Southern Philippines Medical Center Employees Credit Cooperative</div>
             <q-separator class="q-my-md" dark />
             <q-form>
                 <q-input v-model="form.username" autofocus class="q-mb-md" color="white" dark dense
