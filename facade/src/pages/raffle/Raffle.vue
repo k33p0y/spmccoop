@@ -96,7 +96,7 @@ import { Transition } from 'vue';
       getVoters() {
           this.$http.get("api/election/vote/voter-list")
             .then(response => {
-              this.participants.list = response.data.filter( obj => obj['voted'] == 1)
+              this.participants.list = response.data
           })
               .catch(error => {
               this.$http.requestError(error);
@@ -148,7 +148,7 @@ import { Transition } from 'vue';
                 this.showSpinner = false
                 this.showImage = true
                 this.btnDisabled = false
-              }), 1000);
+              }), 2000);
           })
           .catch( error => {
             this.loading = false;

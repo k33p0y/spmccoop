@@ -22,3 +22,6 @@ quasar build
 
 ### Customize the configuration
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js).
+
+### Update Postgres serial sequence
+SELECT setval(pg_get_serial_sequence('election_details', 'id'), coalesce(max(id)+1, 1), false) FROM election_details;
