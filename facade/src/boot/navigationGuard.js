@@ -12,7 +12,7 @@ export default ({ router, store, Vue }) => {
                 next();
             }
         } else {
-            if(to.path == '/oauth/signin' || to.path == '/voter') {
+            if(to.path == '/oauth/signin' || to.path == '/voter' || to.path == '/voter/result-blind') {
                 next();
             } else {
                 router.replace('/voter');

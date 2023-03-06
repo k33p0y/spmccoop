@@ -161,7 +161,7 @@ export default {
         //         });
         // },
         printIndividualVotes(id) {
-            return `http://192.168.1.159:8080/api/election/vote/${id}/print/votes/`;
+            return `http://192.168.254.193:8080/api/election/vote/${id}/print/votes/`;
         }
     },
     watch: {

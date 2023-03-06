@@ -23,12 +23,12 @@ class AuthController extends Controller
 
     public function authenticate(Request $request) {
         try {
-            $client = new Client(['base_uri' => 'http://192.168.1.159:8080']);
+            $client = new Client(['base_uri' => 'http://192.168.254.193:8080']);
             $response = $client->request('POST', '/oauth/token', [
                 'form_params' => [
                     'grant_type' => 'password',
                     'client_id' => 2,
-                    'client_secret' => 'aQS64n6icgC7NvmSFan09pncdIwRSCZuR9565b3h',
+                    'client_secret' => 'Rq29w2ohYZ0LKAPl4KMhUDAvKT0UmOpdOv0DrRB0',
                     'username' => $request->username,
                     'password' => $request->password
                 ],
@@ -119,7 +119,7 @@ class AuthController extends Controller
 
     public function candidateProfileBase64(Request $request, $id) {
 
-        $user = DB::select('SELECT count(*) as count FROM spmccoop.users WHERE id = :id AND profile_picture IS NOT NULL', [ 'id' => $id ]);
+        $user = DB::select('SELECT count(*) as count FROM public.users WHERE id = :id AND profile_picture IS NOT NULL', [ 'id' => $id ]);
         // dd($user[0]);
         if($user[0]->count) {
             $user = User::findOrFail($id);

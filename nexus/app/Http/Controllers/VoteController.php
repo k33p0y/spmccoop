@@ -104,6 +104,49 @@ class VoteController extends Controller
 
     }
 
+    public function resultBlind(Request $request) {
+        $election = Election::where('status', 1)->first();
+        $electionDetails = ElectionDetail::where('election_id', $election->id)->get();
+
+        $countVote = [];
+        foreach($electionDetails as $electionDetail) {
+            $count = Vote::where('election_detail_id', $electionDetail->id)->count();
+            $countMember = User::count();
+            $candidate = User::where("id", $electionDetail->candidate_user_id)->first();
+            $position = Position::where("id", $electionDetail->position_id)->first();
+            array_push($countVote, [
+                'count' => round((($count / $countMember) * 100), 2) . ' %',
+                'candidate' => $candidate->name,
+                'position' => $position->name,
+                'candidate_id' => $candidate->id
+            ]);
+        }
+
+        $positions = [];
+        foreach($countVote as $vote) {
+            array_push($positions, $vote['position']);
+        }
+
+        array_unique($positions);
+
+        $result = [];
+        foreach($positions as $position) {
+            $result[$position] = [];
+            foreach($countVote as $vote) {
+                if($vote['position'] == $position) {
+                    array_push($result[$position], [
+                        'count' => $vote['count'],
+                        'candidate' => $vote['candidate'],
+                        'candidate_id' => $vote['candidate_id']
+                    ]);
+                }
+            }
+            shuffle($result[$position]);
+        }
+
+        return $result;
+    }
+
     public function list(Request $request){
         $election = Election::where('status', 1)->first();
         $electionDetails = ElectionDetail::where('election_id', $election->id)->get();

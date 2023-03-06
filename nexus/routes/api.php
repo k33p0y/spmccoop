@@ -58,6 +58,7 @@ Route::group(['prefix' => 'election'], function() {
     Route::group(['prefix' => 'vote'], function() {
         Route::post('/', [VoteController::class, 'vote']);
         Route::get('/list', [VoteController::class, 'list']);
+        Route::get('/result-blind', [VoteController::class, 'resultBlind']);
         Route::get('/result', [VoteController::class, 'result'])->middleware(['auth:api']);
         Route::get('/voter-list', [VoteController::class, 'voterList'])->middleware(['auth:api']);
         Route::get('/{voter_id}/print/votes', [VoteController::class, 'printIndividualVotes']);
@@ -75,6 +76,7 @@ Route::group(['prefix' => 'election-detail'], function() {
     Route::post('/store', [ElectionDetailController::class, 'store'])->middleware(['auth:api']);
     Route::patch('/update', [ElectionDetailController::class, 'update'])->middleware(['auth:api']);
     Route::delete('/delete', [ElectionDetailController::class, 'destroy'])->middleware(['auth:api']);
+    // Route::get('/print/election/result', [ElectionDetailController::class, 'printElectionResult']);
 });
 
 Route::group(['prefix' => 'raffle'], function() {

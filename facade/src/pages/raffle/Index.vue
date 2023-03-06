@@ -118,12 +118,12 @@
 				if (i == 0) continue; // <thead>
 				ids.push(table.rows[i].cells[0].children[0].innerHTML)
 			}
-			let baseUrl = 'http://192.168.1.159:8080/api/raffle/winners';
+			let baseUrl = 'http://192.168.254.193:8080/api/raffle/print/winners';
 			let paramName = 'ids[]=';
 			let arrayAsString = '?' + paramName + ids.join('&' + paramName);
 			let urlWithParams = baseUrl + arrayAsString;
 			window.location.href = urlWithParams;
-		}
+		},
     },
     created() {
         this.executeLoadTableRows();

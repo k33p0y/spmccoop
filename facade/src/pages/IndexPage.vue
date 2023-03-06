@@ -47,9 +47,10 @@ export default defineComponent({
     created() {
         this.$http.get('api/election/vote/result', {})
             .then(response => {
-                console.log('louie', response);
+                // console.log('louie', response);
                 // this.showVoteList = true;
                 this.result = response.data;
+                console.log(response.data)
             })
             .catch(error => {
                 this.loading = false;

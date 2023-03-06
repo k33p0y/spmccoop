@@ -46,7 +46,8 @@ const routes = [
     path: '/voter',
     component: () => import('layouts/default/Layout.vue'),
     children: [
-      { path: '', component: () => import('pages/voter-client/IndexPage.vue') }
+      { path: '', component: () => import('pages/voter-client/IndexPage.vue') },
+      { path: 'result-blind', component: () => import('pages/voter-client/IndexResult.vue') }
     ]
   },
   {
