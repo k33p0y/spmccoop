@@ -7,12 +7,12 @@
         <p class="text-h4 q-my-md">Profile</p>
         <fieldset>
             <legend>Change Password</legend>
-            <q-input v-model="form.currentPassword" class="q-mb-md" color="teal" :error="errors.currentPassword" :error-message="errors.currentPasswordMessage" filled hide-bottom-space input-class="password" placeholder="NEW PASSWORD" :type="viewnCurrentPassword ? 'text' : 'password'">
+            <q-input v-model="form.currentPassword" class="q-mb-md" color="teal" :error="errors.currentPassword" :error-message="errors.currentPasswordMessage" filled hide-bottom-space input-class="password" placeholder="CURRENT PASSWORD" :type="viewnCurrentPassword ? 'text' : 'password'">
                 <template v-slot:append>
                     <q-icon :name="viewnCurrentPassword ? 'visibility' : 'visibility_off'" class="cursor-pointer" @click="viewnCurrentPassword = !viewnCurrentPassword" />
                 </template>
             </q-input>
-            <q-input v-model="form.password" class="q-mb-md" color="teal" :error="errors.password" :error-message="errors.passwordMessage" filled hide-bottom-space input-class="password" placeholder="CURRENT PASSWORD" :type="viewPassword ? 'text' : 'password'">
+            <q-input v-model="form.password" class="q-mb-md" color="teal" :error="errors.password" :error-message="errors.passwordMessage" filled hide-bottom-space input-class="password" placeholder="NEW PASSWORD" :type="viewPassword ? 'text' : 'password'">
                 <template v-slot:append>
                     <q-icon :name="viewPassword ? 'visibility' : 'visibility_off'" class="cursor-pointer" @click="viewPassword = !viewPassword" />
                 </template>

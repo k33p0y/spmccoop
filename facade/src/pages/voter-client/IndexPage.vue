@@ -59,7 +59,7 @@
                 <q-card-actions align="right" class="text-primary">
                     <q-btn flat label="Clear" @click="form.vote = form.clearVote" v-close-popup />
                     <q-btn flat label="Go Back" v-close-popup />
-                    <q-btn flat label="Vote" @click="executeVote()" />
+                    <q-btn flat label="Vote" @click="executeVote()" :loading="!loading"/>
                 </q-card-actions>
             </q-card>
         </q-dialog>
@@ -160,11 +160,13 @@ export default defineComponent({
                 id: this.form.id
             })
                 .then(response => {
+                    this.loading = false;
                     this.$http.postTokenless('api/election/vote', {
                         id: this.form.id,
                         vote: this.form.vote
                     })
                         .then(response => {
+                            this.loading = false;
                             this.inception2 = true;
                         })
                         .catch(error => {

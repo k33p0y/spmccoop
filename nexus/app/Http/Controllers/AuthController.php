@@ -23,12 +23,12 @@ class AuthController extends Controller
 
     public function authenticate(Request $request) {
         try {
-            $client = new Client(['base_uri' => 'http://192.168.254.193:8080']);
+            $client = new Client(['base_uri' => 'http://192.168.1.118:8080']);
             $response = $client->request('POST', '/oauth/token', [
                 'form_params' => [
                     'grant_type' => 'password',
                     'client_id' => 2,
-                    'client_secret' => 'Rq29w2ohYZ0LKAPl4KMhUDAvKT0UmOpdOv0DrRB0',
+                    'client_secret' => 'VWXXmqczDJsO7K5xJoAUHOKwc8CdPFmoFXdl2aRD',
                     'username' => $request->username,
                     'password' => $request->password
                 ],

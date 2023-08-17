@@ -16,7 +16,7 @@
 								<q-form>
 									<q-input class="input-price" v-model="form.price" autofocus color="teal-8" hide-bottom-space input-class="price" label="PRICE" outlined>
 										<template v-slot:label>
-											PRICE
+											PRIZE
 											<span class="text-negative">*</span>
 										</template>
 									</q-input>
